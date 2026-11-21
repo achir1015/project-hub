@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Achir1015專案彙整</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>" />
+  <link rel="stylesheet" href="css/style.css" />
+  <!-- Markdown 轉 HTML 與安全過濾 -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <h1>Achir1015專案彙整</h1>
+      <span id="lastUpdated" class="muted"></span>
+    </div>
+    <div class="actions">
+      <button id="btnAggregate" class="btn primary">🔄 彙整 GitHub</button>
+      <button id="btnCategories" class="btn">🗂️ 管理分類</button>
+      <button id="btnSettings" class="btn">⚙️ 設定</button>
+    </div>
+  </header>
+
+  <div id="progress" class="progress hidden">
+    <div class="bar"><div id="progressFill"></div></div>
+    <span id="progressText"></span>
+  </div>
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- 搜尋 / 排序 / 篩選 -->
+  <section class="toolbar">
+    <input id="search" type="search" placeholder="搜尋專案名稱、說明、語言…" />
+    <select id="sort" aria-label="排序">
+      <option value="pushed">最近更新</option>
+      <option value="stars">星星數</option>
+      <option value="name">名稱</option>
+    </select>
+    <div id="filters" class="chips">
+      <button class="chip" data-filter="apple">🍎 Apple</button>
+      <button class="chip" data-filter="play">▶ Play</button>
+      <button class="chip" data-filter="video">🎬 影片</button>
+      <button class="chip" data-filter="download">⬇ 下載</button>
+      <button class="chip" data-filter="live">🌐 線上版</button>
+    </div>
+  </section>
+
+  <main class="layout">
+    <!-- 資料夾樣式：上方是分類頁簽，下方是有外框的內容區，專案多時在框內垂直捲動 -->
+    <section class="folder">
+      <nav id="tabs" class="tabs" role="tablist"></nav>
+      <div class="folder-panel">
+        <section id="grid" class="grid" aria-label="專案列表"></section>
+      </div>
+    </section>
+    <aside id="detail" class="detail" aria-label="專案詳細"></aside>
+  </main>
+
+  <!-- 分類管理視窗 -->
+  <dialog id="dlgCategories">
+    <form method="dialog" class="dlg">
+      <h2>🗂️ 管理分類</h2>
+      <p class="muted">新增、改名、換顏色、調整頁簽順序或刪除。刪除分類不會刪除專案，專案會回到「未分類」。</p>
+      <div class="row">
+        <input id="newCatName" placeholder="新分類名稱，例如：遊戲、ESP32、長照" />
+        <button id="btnAddCat" class="btn primary" type="button">＋ 新增</button>
+      </div>
+      <ul id="catList" class="cat-list"></ul>
+      <menu><button class="btn" value="close">關閉</button></menu>
+    </form>
+  </dialog>
+
+  <!-- 設定視窗 -->
+  <dialog id="dlgSettings">
+    <form method="dialog" class="dlg">
+      <h2>⚙️ 設定</h2>
+      <label>GitHub 帳號（帳號名稱，不是 email）
+        <input id="setOwner" placeholder="achir1015" />
+      </label>
+      <label>GitHub Token（選填）
+        <input id="setToken" type="password" placeholder="ghp_… 或 github_pat_…" autocomplete="off" />
+      </label>
+      <p class="muted small">
+        沒有 Token 時，GitHub 每小時只允許 60 次查詢，專案多時部分「下載版本」會晚一點才更新。
+        填入 Token 可提高到每小時 5000 次，也能看到私人專案。Token 只存在你這台電腦的瀏覽器裡。
+        建立方式：GitHub → Settings → Developer settings → Fine-grained tokens，權限選「Contents: Read-only」即可。
+      </p>
+      <label class="inline"><input id="setForks" type="checkbox" /> 顯示 Fork 來的專案</label>
+      <hr />
+      <h3>備份分類與手動資料</h3>
+      <p class="muted small">分類和手動填寫的資料存在這台電腦的瀏覽器。換電腦或換瀏覽器時，用匯出 / 匯入搬過去。</p>
+      <div class="row">
+        <button id="btnExport" class="btn" type="button">⬇ 匯出備份</button>
+        <label class="btn">⬆ 匯入備份<input id="fileImport" type="file" accept=".json,application/json" hidden /></label>
+      </div>
+      <menu>
+        <button class="btn" value="cancel">取消</button>
+        <button id="btnSaveSettings" class="btn primary" value="save">儲存</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
